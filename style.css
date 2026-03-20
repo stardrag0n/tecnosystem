@@ -1,0 +1,621 @@
+/* =========================================
+   1. VARIABILI, RESET E FONTS
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
+
+:root {
+    --primary: #1a55e3;    /* Blu Originale */
+    --bg-body: #050505;    /* Sfondo Scurissimo */
+    --bg-header: #ffffff;  /* Bianco per l'Header */
+    --text-main: #ffffff;  /* Testo bianco */
+    --text-dark: #222222;  /* Testo scuro */
+    --footer-height: 450px; /* Altezza fissa del footer per i calcoli */
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0; padding: 0;
+    color: var(--text-main);
+    background-color: var(--bg-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, .btn {
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Sfondo Fisso Hero */
+#hero-fixed-background {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    z-index: -1; overflow: hidden;
+}
+#hero-fixed-background img {
+    width: 100%; height: 100%; object-fit: cover; will-change: transform;
+}
+.overlay-scura {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+}
+
+/* Wrapper Principale (fondamentale per coprire lo sfondo fisso) */
+.main-content-wrapper {
+    position: relative;
+    z-index: 10; /* DEVE ESSERE MAGGIORE DEL FOOTER */
+    
+    /* FONDAMENTALE: Sfondo nero solido. 
+       Se non lo metti, il footer si vede in trasparenza sotto tutto il sito */
+    background-color: #050505; 
+    
+    box-shadow: 0 20px 50px rgba(0,0,0,1);
+    
+    /* Il margine lo calcoliamo con JS per essere precisi, 
+       ma mettiamo un valore base di sicurezza */
+    margin-bottom: 400px; 
+    
+    width: 100%;
+}
+
+/* Stile per i link email e telefono */
+.contact-link {
+    color: inherit; /* Mantiene il colore del testo circostante */
+    text-decoration: none; /* Rimuove la sottolineatura di default */
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--primary); /* Cambia in blu quando ci passi sopra */
+    text-decoration: underline; /* Opzionale: aggiunge sottolineatura solo al passaggio */
+}
+
+/* Assicuriamoci che l'indirizzo nella sezione contatti non perda il suo stile */
+.email-text .contact-link {
+    font-size: 18px;
+}
+
+/* Configurazione Lenis Scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+/* =========================================
+   2. HEADER (LOGO CENTRATO)
+   ========================================= */
+header {
+    background: var(--bg-header);
+    position: fixed; width: 100%; top: 0; z-index: 1000;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+header .container {
+    display: flex;
+    justify-content: center; /* CENTRATURA TOTALE */
+    align-items: center;
+}
+
+nav {
+    display: flex; justify-content: center; align-items: center; width: 100%;
+}
+
+.logo {
+    display: flex; align-items: center; gap: 15px;
+    text-decoration: none; color: var(--text-dark);
+    font-size: 24px; font-weight: 900;
+}
+.logo svg { height: 50px; width: auto; }
+.logo-suffix { font-size: 14px; color: var(--primary); font-weight: 700; margin-left: 5px; }
+
+/* Nascondiamo menu e hamburger come richiesto */
+.nav-links, .hamburger { display: none !important; }
+
+/* =========================================
+   3. HERO SECTION
+   ========================================= */
+.hero {
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: transparent;
+}
+.hero-content h1 { font-size: 60px; line-height: 1.1; text-transform: uppercase; margin-bottom: 20px; }
+.hero-content p { font-size: 20px; color: #ddd; margin-bottom: 40px; }
+
+.btn {
+    display: inline-block; background: var(--primary); color: #fff;
+    padding: 18px 50px; text-decoration: none; text-transform: uppercase;
+    font-size: 14px; letter-spacing: 2px; transition: 0.3s;
+    border: 1px solid var(--primary);
+}
+.btn:hover { background: transparent; box-shadow: 0 0 30px var(--primary); }
+
+/* =========================================
+   4. TITOLI E GENERALI
+   ========================================= */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.section-title {
+    font-size: 40px; text-align: center; margin-bottom: 50px;
+    color: var(--text-main); position: relative;
+}
+.section-title::after {
+    content: ''; display: block; width: 60px; height: 4px;
+    background: var(--primary); margin: 20px auto 0;
+}
+
+/* =========================================
+   5. SEZIONE PRODOTTI (GRID)
+   ========================================= */
+.solutions { padding: 100px 0; background: var(--bg-body); }
+
+.solutions-grid { display: flex; gap: 10px; width: 100%; }
+.solution-card {
+    flex: 1; height: 400px; position: relative; overflow: hidden;
+    border: 1px solid #222; cursor: pointer; transition: flex 0.5s ease;
+}
+.solution-card:hover, .solution-card.active { flex: 2; }
+
+.solution-bg {
+    width: 100%; height: 100%; background-size: cover; background-position: center;
+    transition: transform 0.8s ease;
+}
+.solution-card:hover .solution-bg { transform: scale(1.1); }
+
+.solution-content {
+    position: absolute; bottom: 0; width: 100%; padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    text-align: center;
+}
+.solution-content h3 {
+    margin: 0; font-size: 20px; border-bottom: 2px solid var(--primary);
+    display: inline-block; padding-bottom: 5px;
+}
+
+/* --- PANNELLO DETTAGLI (Ritorno alla versione originale corretta) --- */
+.detail-panel {
+    display: none; 
+    width: 100%; 
+    background: #111; 
+    margin-top: 30px; 
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+    animation: slideDown 0.5s ease;
+    position: relative;
+    z-index: 50;
+}
+
+@keyframes slideDown { 
+    from { opacity: 0; transform: translateY(-20px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.detail-content-wrapper { 
+    display: flex; 
+    /* Altezza fissa per il pannello: impedisce alle foto di allungarlo all'infinito */
+    height: 600px; 
+    width: 100%;
+}
+
+.detail-gallery { 
+    flex: 0 0 65%; 
+    background: #000; 
+    position: relative; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Taglia eventuali fuoriuscite */
+}
+
+.carousel-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-container img { 
+    /* L'immagine deve adattarsi al contenitore da 600px senza superarlo mai */
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: contain; 
+    display: block;
+}
+.carousel-nav button {
+    position: absolute; 
+    top: 0;           /* Occupano tutta l'altezza per facilitare il click */
+    height: 100%;
+    width: 80px;      /* Area di click più larga */
+    
+    background: rgba(0,0,0,0); /* Sfondo invisibile di base */
+    border: none; 
+    color: rgba(255, 255, 255, 0.5); /* Frecce semi-trasparenti */
+    
+    font-size: 50px;  /* Frecce molto grandi */
+    font-weight: 300;
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    z-index: 110;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Effetto al passaggio del mouse: lo sfondo scurisce e la freccia si illumina */
+.carousel-nav button:hover {
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+
+#prev-btn { 
+    left: 0; 
+    /* Gradiente leggero per far risaltare la freccia su foto chiare */
+    background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+} 
+
+#next-btn { 
+    right: 0; 
+    background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
+}
+
+/* Rimuoviamo eventuali icone o stili che le rimpiccioliscono */
+#prev-btn::before, #next-btn::before {
+    font-family: serif; /* Per un look più sottile ed elegante */
+}
+
+.detail-info { 
+    flex: 0 0 35%; 
+    padding: 60px 40px; 
+    background: #161616; 
+    overflow-y: auto; 
+    border-left: 1px solid #222;
+}
+
+/* Pulsante chiusura in alto a destra del pannello */
+.close-detail-btn {
+    position: absolute; top: 20px; right: 20px; font-size: 35px;
+    background: none; border: none; color: #fff; cursor: pointer; z-index: 100;
+}
+
+/* Fix Mobile */
+@media (max-width: 768px) {
+    .detail-content-wrapper { flex-direction: column; height: auto; }
+    .detail-gallery { height: 350px; flex: none; }
+    .detail-info { flex: none; padding: 30px 20px; }
+}
+
+/* =========================================
+   6. SERVIZI
+   ========================================= */
+.services { padding: 100px 0; background: #0a0a0a; border-top: 1px solid #222; }
+.services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+.service-card { height: 400px; position: relative; border: 1px solid #333; overflow: hidden; }
+.service-bg { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.5s; }
+.service-card:hover .service-bg { transform: scale(1.1); }
+.service-content {
+    position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+}
+
+/* =========================================
+   7. GALLERY PINNED (PARALLASSE & TITOLO FISSO)
+   ========================================= */
+.gallery-pinned-section {
+    position: relative; width: 100%;
+    height: 400vh; /* Altezza enorme per lo scroll */
+    background-color: #ffffff; /* Sfondo bianco */
+    z-index: 1; /* Livello basso per farci salire sopra i contatti */
+}
+
+.gallery-sticky-wrapper {
+    position: sticky; top: 0; width: 100%; height: 100vh;
+    overflow: hidden; display: flex; justify-content: center; align-items: center;
+}
+
+.gallery-center-title {
+    position: relative; z-index: 20; text-align: center; pointer-events: auto;
+    color: #000000; /* Nero fisso */
+    text-shadow: 0 0 30px rgba(255,255,255,0.8);
+}
+.gallery-center-title h2 { font-size: 7vw; text-transform: uppercase; margin: 0; line-height: 1; }
+
+.gallery-moving-images {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
+}
+.pinned-image {
+    position: absolute; will-change: transform;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+}
+.pinned-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Livelli Profondità Gallery */
+.layer-front { width: 22vw; height: 35vh; z-index: 30; opacity: 1; }
+.layer-mid   { width: 16vw; height: 25vh; z-index: 10; opacity: 0.9; filter: grayscale(30%); }
+.layer-back  { width: 12vw; height: 18vh; z-index: 1;  opacity: 0.5; filter: grayscale(100%) blur(2px); }
+
+/* =========================================
+   8. CONTATTI
+   ========================================= */
+
+.contact-section {
+    /* Manteniamo l'altezza per l'effetto scroll */
+    min-height: 120vh; 
+    
+    /* Il "Sipario Nero" sopra */
+    padding-top: 250px; 
+    padding-bottom: 100px;
+    
+    background: #0a0a0a;
+    position: relative;
+    z-index: 100;
+    
+    /* Overlay sulla gallery */
+    margin-top: -100vh; 
+    box-shadow: 0 -60px 100px rgba(0,0,0,0.95);
+    margin-bottom: 0 !important; 
+    
+    /* Transizioni */
+    transition: transform 0.1s linear, border-radius 0.1s linear;
+    transform-origin: center bottom;
+
+    /* LAYOUT: Usiamo Flex per centrare il blocco verticalmente, 
+       ma lasciamo che si allarghi orizzontalmente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Assicuriamo che il container interno sia largo */
+.contact-section .container {
+    width: 100%;
+    max-width: 1300px; /* Un po' più largo dello standard per dare respiro */
+    padding: 0 40px;
+}
+
+/* --- GRIGLIA CONTENUTO (Largo e Affiancato) --- */
+.contact-grid {
+    display: grid;
+    /* Due colonne: Sinistra (Info) 40%, Destra (Form) 60% */
+    grid-template-columns: 0.8fr 1.2fr; 
+    gap: 80px; /* Molto spazio tra le due colonne */
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* COLONNA SINISTRA (Info & Mappa) */
+.contact-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.info-box h3 { font-size: 32px; margin-bottom: 20px; color: #fff; }
+.address, .email-text { font-size: 18px; color: #ccc; margin-bottom: 5px; }
+
+/* Mappa rettangolare sotto i dati */
+.map-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #333;
+    transition: filter 0.3s;
+}
+.map-container:hover { filter: grayscale(0%); }
+
+/* COLONNA DESTRA (Form) */
+.contact-form-col {
+    width: 100%;
+}
+
+.contact-form {
+    background: #111;
+    padding: 50px; /* Più padding interno */
+    border: 1px solid #222;
+    border-radius: 4px;
+}
+
+/* Layout Form a due colonne per Nome/Cognome */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.form-group { width: 100%; margin-bottom: 25px; } /* Spazio verticale tra i campi */
+
+.contact-form label {
+    display: block; margin-bottom: 10px;
+    color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+}
+
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 18px; /* Campi più alti e comodi */
+    background: #050505;
+    border: 1px solid #333;
+    color: white;
+    font-size: 16px;
+    font-family: 'Outfit', sans-serif;
+}
+.contact-form input:focus, .contact-form textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.phone-number { font-size: 40px; color: var(--primary); text-decoration: none; font-weight: 700; display: block; margin: 10px 0; }
+
+/* FIX MOBILE */
+@media (max-width: 1024px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 50px; }
+    .contact-section { padding-top: 200px; align-items: flex-start; }
+    .form-row { flex-direction: column; gap: 0; }
+}
+
+/* =========================================
+   9. FOOTER REVEAL (FISSO SOTTO)
+   ========================================= */
+.reveal-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto; 
+    min-height: 400px;
+    background-color: #000;
+    color: #fff;
+    z-index: 0; 
+    
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-end;
+
+    /* MODIFICA: Nascondiamo il footer all'inizio */
+    opacity: 0; 
+    visibility: hidden;
+    transition: opacity 0.01s ease-in-out, visibility 0.01s;
+    pointer-events: none; /* Evita click accidentali quando è invisibile */
+}
+
+/* Nuova classe che aggiungeremo con JS quando scorri */
+.reveal-footer.footer-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* Riattiva i click */
+}
+
+.footer-content { width: 100%; padding: 40px 20px 0; display: flex; flex-direction: column; }
+.footer-top { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; width: 100%; }
+.footer-col h4 { color: #666; text-transform: uppercase; font-size: 12px; margin-bottom: 10px; }
+.footer-col p { font-size: 16px; line-height: 1.4; }
+.footer-big-logo { width: 100%; border-top: 1px solid #222; padding: 10px 0; margin-top: 20px; line-height: 0; background: #000; }
+.footer-big-logo svg { width: 100%; height: auto; max-height: 20vh; display: block; }
+
+@media (max-width: 768px) {
+    /* Su mobile il footer potrebbe essere più corto */
+    :root { --footer-height: 400px; }
+    .reveal-footer { z-index: 0; }
+}
+
+/* =========================================
+   10. MOBILE RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+    :root { --footer-height: 400px; }
+    
+    .hero-content h1 { font-size: 36px; }
+    .solutions-grid { flex-wrap: wrap; }
+    .solution-card { flex: 1 1 100%; height: 250px; }
+    .solution-card:hover { flex: 1 1 100%; } /* No expand mobile */
+    
+    .detail-content-wrapper { flex-direction: column; height: auto; }
+    .detail-gallery, .detail-info { flex: 100%; width: 100%; }
+    .detail-gallery { height: 300px; }
+    
+    .gallery-pinned-section { height: 300vh; }
+    .gallery-center-title h2 { font-size: 40px; }
+    
+    .contact-grid { grid-template-columns: 1fr; }
+    .footer-top { flex-direction: column; gap: 20px; text-align: center; }
+}
+
+/* =========================================
+   11. FULL GALLERY POPUP & LIGHTBOX
+   ========================================= */
+.full-modal {
+    position: fixed;
+    left: 0;
+    bottom: -100%; /* Inizia fuori dallo schermo in basso */
+    width: 100%;
+    height: 92vh; /* Lascia un piccolo spazio vuoto in alto */
+    background: #050505;
+    z-index: 3000;
+    transition: bottom 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+    box-shadow: 0 -20px 100px rgba(0,0,0,0.8);
+    border-radius: 30px 30px 0 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.full-modal.active { bottom: 0; }
+
+.modal-nav {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: flex-end;
+    background: #050505;
+    border-bottom: 1px solid #111;
+}
+
+.close-modal-btn {
+    background: none; border: 1px solid #333; color: #fff;
+    padding: 10px 25px; border-radius: 50px; cursor: pointer;
+    font-family: 'Outfit'; font-size: 12px; letter-spacing: 2px;
+    transition: 0.3s;
+}
+.close-modal-btn:hover { background: #fff; color: #000; }
+
+.modal-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 60px 0;
+}
+
+/* GRIGLIA IMMAGINI */
+.full-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.grid-item {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #111;
+}
+
+.grid-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.grid-item:hover img { transform: scale(1.08); }
+
+/* LIGHTBOX (Z-Index massimo) */
+.lightbox {
+    display: none; position: fixed; z-index: 4000;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    justify-content: center; align-items: center;
+}
+.lightbox-img { max-width: 90%; max-height: 85%; border: 2px solid #222; }
+.lightbox-close {
+    position: absolute; top: 40px; right: 40px;
+    color: #fff; font-size: 50px; cursor: pointer;
+}
+
+/* Effetto sottolineatura animata per "I Nostri Lavori" */
+#open-full-gallery {
+    display: inline-block;
+    position: relative;
+    cursor: pointer; /* Già presente inline, ma utile ribadirlo */
+}
+
+#open-full-gallery::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: -5px;
+    left: 0;
+    background-color: #000; /* Colore nero coerente con il titolo della gallery */
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+#open-full-gallery:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}

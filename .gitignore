@@ -1,0 +1,16 @@
+# PHP
+composer.lock
+vendor/
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific (example: uploads)
+uploads/
