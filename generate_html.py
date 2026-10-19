@@ -25,12 +25,15 @@ def generate_index_html():
     for item in gallery_raw:
         path = item.get('image_path', '')
         resolved = None
-        for key, target in photo_map.items():
-            if key in path:
-                resolved = target
-                break
-        if not resolved or not os.path.exists(resolved):
-            resolved = 'photos/Finestra 1.png'
+        if path and os.path.exists(path):
+            resolved = path
+        else:
+            for key, target in photo_map.items():
+                if key in path:
+                    resolved = target
+                    break
+            if not resolved or not os.path.exists(resolved):
+                resolved = 'photos/Finestra 1.png'
         gallery.append({'image_path': resolved})
 
     # Fallback product images
@@ -53,13 +56,24 @@ def generate_index_html():
     js_data = {}
     for p in products:
         p_id = p['id']
-        main_img = product_img_map.get(p_id, 'photos/Finestra 1.png')
+        img_db = p.get('image_path')
+        if img_db and os.path.exists(img_db):
+            main_img = img_db
+        else:
+            main_img = product_img_map.get(p_id, 'photos/Finestra 1.png')
         
         # Build gallery for modal
         all_imgs = [main_img]
-        for f in ['photos/Porta 1.png', 'photos/Finestra 1.png', 'photos/Portafinestra 1.png']:
-            if f not in all_imgs:
-                all_imgs.append(f)
+        raw_gal = p.get('gallery_images')
+        gallery_list = json.loads(raw_gal) if raw_gal else []
+        for g_file in gallery_list:
+            if g_file and os.path.exists(g_file) and g_file not in all_imgs:
+                all_imgs.append(g_file)
+        
+        if len(all_imgs) == 1:
+            for f in ['photos/Porta 1.png', 'photos/Finestra 1.png', 'photos/Portafinestra 1.png']:
+                if f not in all_imgs and os.path.exists(f):
+                    all_imgs.append(f)
 
         js_data[str(p_id)] = {
             'title': p['title'],
@@ -72,7 +86,11 @@ def generate_index_html():
     for p in products:
         p_id = p['id']
         title = html.escape(p['title'])
-        img = product_img_map.get(p_id, 'photos/Finestra 1.png')
+        img_db = p.get('image_path')
+        if img_db and os.path.exists(img_db):
+            img = img_db
+        else:
+            img = product_img_map.get(p_id, 'photos/Finestra 1.png')
         products_cards_html.append(f'''                    <div class="solution-card" data-id="{p_id}">
                         <div class="solution-bg" style="background-image: url('{img}');"></div>
                         <div class="solution-content">
@@ -86,7 +104,11 @@ def generate_index_html():
         s_id = s['id']
         title = html.escape(s['title'])
         desc = html.escape(s['description']).replace('\n', '<br>')
-        bg = service_img_map.get(s_id, 'photos/Finestra 1.png')
+        srv_db = s.get('image_path')
+        if srv_db and os.path.exists(srv_db):
+            bg = srv_db
+        else:
+            bg = service_img_map.get(s_id, 'photos/Finestra 1.png')
         services_cards_html.append(f'''                    <div class="service-card">
                         <div class="service-bg" style="background-image: url('{bg}');"></div>
                         <div class="service-content">
