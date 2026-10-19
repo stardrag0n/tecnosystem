@@ -13,4 +13,6 @@ vendor/
 Thumbs.db
 
 # Project-specific (example: uploads)
-uploads/
+uploads/*
+!uploads/.gitkeep
+!uploads/*_gal_*.png

@@ -1,0 +1,24 @@
+# 1. Imposta index.php come pagina iniziale predefinita (evita che Apache carichi index.html)
+DirectoryIndex index.php index.html
+
+# 2. Impedisci la lettura di file nascosti (.git, .env, ecc.)
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 3. Impedisci la lettura diretta di file di database ovunque si trovino
+<FilesMatch "\.(sqlite|db)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

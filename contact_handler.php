@@ -22,7 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email_content .= "Email: $email\n\n";
     $email_content .= "Messaggio:\n$messaggio\n";
 
-    $headers = "From: $nome <$email>";
+    $server_host = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'tecnosystem.altervista.org';
+    $headers = "From: Tecno System Web <noreply@{$server_host}>\r\n";
+    $headers .= "Reply-To: $nome $cognome <$email>\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
 
     // 5. Invio
     if (mail($to, $subject, $email_content, $headers)) {

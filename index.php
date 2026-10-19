@@ -14,16 +14,87 @@ try {
     $stmt = $pdo->query("SELECT * FROM products WHERE is_visible = 1 ORDER BY sort_order ASC");
     $all_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Funzioni helper per la risoluzione affidabile delle immagini
+    function resolve_product_image($id, $image_path) {
+        if (!empty($image_path) && file_exists($image_path)) {
+            return $image_path;
+        }
+        $defaults = [
+            1 => 'photos/Porta 1.png',
+            2 => 'photos/Finestra 1.png',
+            3 => 'photos/Gazebo 1.png',
+            4 => 'photos/Portafinestra 1.png',
+            5 => 'photos/Finestra 1.png',
+            6 => 'photos/Pergolati 1.png',
+            7 => 'photos/Porta 1.png'
+        ];
+        if (isset($defaults[$id]) && file_exists($defaults[$id])) {
+            return $defaults[$id];
+        }
+        return 'photos/placeholder.jpg';
+    }
+
+    function resolve_service_image($id, $image_path) {
+        if (!empty($image_path) && file_exists($image_path)) {
+            return $image_path;
+        }
+        $defaults = [
+            1 => 'photos/Finestra 1.png',
+            2 => 'photos/Portafinestra 1.png',
+            3 => 'photos/Porta 1.png'
+        ];
+        if (isset($defaults[$id]) && file_exists($defaults[$id])) {
+            return $defaults[$id];
+        }
+        return 'photos/default_service.jpg';
+    }
+
+    function resolve_gallery_image($image_path) {
+        if (!empty($image_path) && file_exists($image_path)) {
+            return $image_path;
+        }
+        $photo_map = [
+            'Finestra 1' => 'photos/Finestra 1.png',
+            'Gazebo 1' => 'photos/Gazebo 1.png',
+            'Pergolati 1' => 'photos/Pergolati 1.png',
+            'Porta 1' => 'photos/Porta 1.png',
+            'Portafinestra 1' => 'photos/Portafinestra 1.png',
+        ];
+        foreach ($photo_map as $key => $target) {
+            if (strpos($image_path, $key) !== false && file_exists($target)) {
+                return $target;
+            }
+        }
+        return 'photos/placeholder.jpg';
+    }
+
     // Preparazione dati JS per i prodotti (Pop-up dettagli)
     $js_data = [];
     foreach ($all_products as $p) {
-        $cat_id = $p['category_id']; // Assicurati che nel DB la colonna sia 'category_id' o usa 'id'
-        $main_img = !empty($p['image_path']) ? $p['image_path'] : 'photos/placeholder.jpg';
-        $gallery = !empty($p['gallery_images']) ? json_decode($p['gallery_images'], true) : [];
+        $cat_id = $p['category_id'];
+        $main_img = resolve_product_image($p['id'], $p['image_path']);
+        $raw_gallery = !empty($p['gallery_images']) ? json_decode($p['gallery_images'], true) : [];
+        $valid_gallery = [];
+        if (is_array($raw_gallery)) {
+            foreach ($raw_gallery as $g_img) {
+                if (!empty($g_img) && file_exists($g_img)) {
+                    $valid_gallery[] = $g_img;
+                }
+            }
+        }
         
+        // Se non ci sono altre foto in gallery, aggiungiamo delle foto campione da photos/
+        if (empty($valid_gallery)) {
+            $samples = ['photos/Porta 1.png', 'photos/Finestra 1.png', 'photos/Portafinestra 1.png'];
+            foreach ($samples as $s_img) {
+                if ($s_img !== $main_img && file_exists($s_img)) {
+                    $valid_gallery[] = $s_img;
+                }
+            }
+        }
+
         // Uniamo copertina + gallery
-        $carousel_images = array_merge([$main_img], $gallery);
-        // Puliamo array da valori vuoti o duplicati
+        $carousel_images = array_merge([$main_img], $valid_gallery);
         $carousel_images = array_values(array_filter(array_unique($carousel_images)));
 
         // Usiamo l'ID numerico come chiave per sicurezza
@@ -121,7 +192,7 @@ try {
                     <?php 
                         // Recuperiamo ID e Immagine per la card
                         $p_id = $product['id']; // ID univoco
-                        $img_path = !empty($product['image_path']) ? $product['image_path'] : 'photos/placeholder.jpg';
+                        $img_path = resolve_product_image($product['id'], $product['image_path']);
                         $title = htmlspecialchars($product['title']);
                     ?>
                     <div class="solution-card" data-id="<?= $p_id ?>">
@@ -165,7 +236,7 @@ try {
             <div class="services-grid">
                 <?php foreach ($all_services as $s): ?>
                     <?php 
-                        $bg_img = !empty($s['image_path']) ? $s['image_path'] : 'photos/default_service.jpg'; 
+                        $bg_img = resolve_service_image($s['id'], $s['image_path']); 
                     ?>
                     <div class="service-card">
                         <div class="service-bg" style="background-image: url('<?= $bg_img ?>');"></div>
@@ -193,7 +264,7 @@ try {
                 if (!empty($general_gallery)) {
                     $i = 0;
                     foreach ($general_gallery as $row): 
-                        $path = $row['image_path'];
+                        $path = resolve_gallery_image($row['image_path']);
                         
                         // Creiamo 3 livelli di profondità
                         // Front: passa SOPRA il titolo
@@ -206,11 +277,7 @@ try {
                         $speed = 0.8 + (rand(1, 4) / 10); 
                     ?>
                         <div class="pinned-image <?= $current_layer ?>" data-speed="<?= $speed ?>">
-                            <?php if(file_exists($path)): ?>
-                                <img src="<?= htmlspecialchars($path) ?>" alt="Project">
-                            <?php else: ?>
-                                <img src="photos/placeholder.jpg" alt="Project">
-                            <?php endif; ?>
+                            <img src="<?= htmlspecialchars($path) ?>" alt="Project">
                         </div>
                     <?php endforeach; 
                 }
@@ -299,7 +366,7 @@ try {
             <div class="full-grid">
                 <?php foreach ($general_gallery as $row): ?>
                     <div class="grid-item">
-                        <img src="<?= htmlspecialchars($row['image_path']) ?>" alt="Lavoro Tecno System" loading="lazy">
+                        <img src="<?= htmlspecialchars(resolve_gallery_image($row['image_path'])) ?>" alt="Lavoro Tecno System" loading="lazy">
                     </div>
                 <?php endforeach; ?>
             </div>

@@ -1,5 +1,12 @@
 <?php
-// Reindirizza l'utente direttamente alla pagina di login
-header("Location: login.php");
-exit();
+session_start();
+
+// Se l'utente è già autenticato reindirizza alla dashboard, altrimenti alla pagina di login
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit();
+} else {
+    header("Location: login.php");
+    exit();
+}
 ?>
